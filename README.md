@@ -50,7 +50,6 @@ Vue.use(FormulaInput)
 
 ### options
 ```json
-// example
 [
   {
     "field": "superman",
