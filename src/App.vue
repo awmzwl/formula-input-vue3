@@ -1,29 +1,56 @@
 <template>
-  <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png" />
-    <HelloWorld msg="Welcome to Your Vue.js + TypeScript App" />
-  </div>
+  <formula-input :validKeys="validKeys" style="width: 600px;" placeholder="输入「@」后选择指标" :options="options" v-model="model" @change="afterChange"></formula-input>
 </template>
 
-<script lang="ts">
-import { Component, Vue } from 'vue-property-decorator'
-import HelloWorld from './components/HelloWorld.vue'
-
-@Component({
-  components: {
-    HelloWorld
+<script setup>
+import FormulaInput from './views/FormulaInput/index.vue'
+import { ref, watch } from 'vue'
+const validKeys='0123456789+-*/%!@.()'
+const model = ref({
+  formula: '1+superman+2-batman+3',
+  vars: {
+    superman: 'ClarkKent',
+    batman: 'BruceWayne',
   }
 })
-export default class App extends Vue {}
+const options = ref([
+  {
+    field: 'superman',
+    name: 'ClarkKent'
+  },
+  {
+    field: 'batman',
+    name: 'BruceWayne'
+  },
+  {
+    field: 'theflash',
+    name: 'BarryAllen'
+  },
+  {
+    field: 'wonderwoman',
+    name: 'DianaPrince'
+  },
+  {
+    field: 'aquaman',
+    name: 'ArthurCurry'
+  },
+  {
+    field: 'cyborg',
+    name: 'VictorStone'
+  },
+  {
+    field: 'greenlantern',
+    name: 'HalJordan'
+  }
+])
+const cs=() => {
+  console.log(model.value)
+}
+function afterChange(v) {
+}
 </script>
-
 <style>
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+.read-the-docs {
+  color: #888;
 }
 </style>

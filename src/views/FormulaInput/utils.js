@@ -22,7 +22,7 @@ export const dom2str = node => {
 export const isHTML = v =>
   Object.prototype.toString.call(v) === '[object HTMLDivElement]'
 
-export const validKeys = '0123456789+-*/@.()'
+export const defaultKeys = '0123456789+-*/%!@.()'
 
 export const getDiffIndex = (s1, s2) => {
   const l1 = s1.split('')
@@ -44,27 +44,36 @@ export const setFocus = (el, index) => {
   const sel = window.getSelection()
   let nodeIndex = 0
   let offsetIndex = 0
-
   const list = str2dom(el.innerHTML)
-  for (let i = 0; i < list.length; i++) {
+  console.log(list);
+  for (let i = 0; i < list.length&&index; i++) {
     const v = list[i]
     if (isHTML(v)) {
       index -= dom2str(v).length
+      console.log(dom2str(v));
+      console.log(index);
     } else {
       if (index > v.length) {
         index -= v.length
-      } else {
+      } 
+      else {
         offsetIndex = index
         break
       }
     }
     nodeIndex++
   }
-
   range.selectNodeContents(el)
   range.collapse(false)
-  el.childNodes[nodeIndex] &&
-    range.setStart(el.childNodes[nodeIndex], offsetIndex)
+  if(el.childNodes[nodeIndex]){
+    console.log(el.childNodes[nodeIndex].nodeType)
+    const targetNode = el.childNodes[nodeIndex];
+    const previousNode = el.childNodes[nodeIndex - 1];
+    if(targetNode&&previousNode){
+      range.setStartAfter(previousNode);
+      range.setEndBefore(targetNode);
+    }
+  }
   range.collapse(true)
   sel.removeAllRanges()
   sel.addRange(range)

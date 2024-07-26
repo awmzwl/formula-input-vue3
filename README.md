@@ -1,19 +1,10 @@
-# Formula Input
+# Formula Input—vue3
 ## 公式输入框
 要求能够编辑公式，需求是能够自由编辑数字和加减乘除符号，并能插入指标作为变量
 
-### 开发
-```
-yarn serve
-```
-
-### 打包
-```
-yarn build
-```
-
 ### 使用方法
-输入框内只能输入数字及```+-*/.@()```，其中键入```@```可触发下拉筛选变量
+输入框内默认只能输入数字及```+-*/%.@!()```，其中键入```@```可触发弹窗选择变量。
+想要输入其他字符，需要设置```validKeys```
 ```typescript
 // main.js
 import FormulaInput from "@ali/formula-input"
@@ -22,6 +13,7 @@ Vue.use(FormulaInput)
 // xxxPage.vue
 <formula-input
   v-model="model"
+  :validKeys="validKeys"// 可选(vue3新增)
   :options="options"
   :disabled="disabled"
   placeholder="placeholder"
@@ -35,6 +27,7 @@ Vue.use(FormulaInput)
 | 参数     | 说明             | 类型                   | 默认值 |
 | -------- | ---------------- | ------------------------ | ------ |
 | v-model  | 值 | [model](#model) | { formula: "", vars: {} } |
+| validKeys  | 可输入的键 | String | "0123456789+-*/%!@.()" |
 | options  | 选项 | [options](#options) | [] |
 | disabled | 能否修改 | Boolean | false |
 | placeholder | input说明 | String | "" |
