@@ -2,6 +2,7 @@
 
 ## 公式输入框
 要求能够编辑公式，需求是能够自由编辑数字和加减乘除符号，并能插入指标作为变量
+![加载失败](./src/assets/xg.gif)
 ### vue3版本说明
 2024年7月25日基于原作者[Leon](https://github.com/leonzhang1108)的[vue2版本](https://github.com/leonzhang1108/formula-input)</a>升级到vue3版本:
 <br>1.添加组件validKeys属性自定义可输入字符，默认‘0123456789+-*/%!@.()’
