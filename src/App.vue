@@ -1,5 +1,5 @@
 <template>
-  <formula-input :validKeys="validKeys" style="width: 600px;" placeholder="输入「@」后选择指标" :options="options" v-model="model" @change="afterChange"></formula-input>
+  <formula-input :validKeys="validKeys" style="width: 600px;" placeholder="输入「@」后选择" :options="options" v-model="model" @change="afterChange"></formula-input>
 </template>
 
 <script setup>
