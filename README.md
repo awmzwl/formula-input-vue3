@@ -1,11 +1,9 @@
-# Formula Input—vue3
-## 介绍
-原作者：https://github.com/leonzhang1108/formula-input
+## Formula-Input—vue3
+
 ## 公式输入框
 要求能够编辑公式，需求是能够自由编辑数字和加减乘除符号，并能插入指标作为变量
-
 ### vue3版本说明
-2024年7月25日基于原作者vue2版本升级到vue3版本:
+2024年7月25日基于原作者[Leon](https://github.com/leonzhang1108)的[vue2版本](https://github.com/leonzhang1108/formula-input)</a>升级到vue3版本:
 <br>1.添加组件validKeys属性自定义可输入字符，默认‘0123456789+-*/%!@.()’
 <br>2.开放光标定位
 <br>3.已知Bug：光标定位不准确
