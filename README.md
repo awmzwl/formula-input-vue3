@@ -1,4 +1,6 @@
 # Formula Input—vue3
+## 介绍
+原作者：https://github.com/leonzhang1108/formula-input
 ## 公式输入框
 要求能够编辑公式，需求是能够自由编辑数字和加减乘除符号，并能插入指标作为变量
 
