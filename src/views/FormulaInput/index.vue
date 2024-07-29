@@ -7,7 +7,7 @@
     <div class="formula-input-selection" v-if="showSelection" ref="selectionRef" @click.stop>
       <el-input v-model="filter" ref="inputRef" placeholder="输入关键字筛选" @keyup="escKeyup"></el-input>
       <div class="options" v-if="displayOptions.length">
-        <span class="option" v-for="(item, i) in displayOptions" :key="i" @click="optionClick(item)">
+        <span class="option"  :class="{ 'selected': i === selectedOptionIndex }"  v-for="(item, i) in displayOptions" :key="i" :ref="setOptionRef(i)" @click="optionClick(item)">
           {{ item.name }}
         </span>
       </div>
@@ -31,6 +31,7 @@ import {
   getDiffIndex,
   getParentNode
 } from './utils';
+const optionRefs = ref([]);
 
 const props = defineProps({
   modelValue: {
@@ -91,7 +92,11 @@ onBeforeUnmount(() => {
   const ele = document.querySelector('.formula-input-selection');
   ele && ele.parentNode.removeChild(ele);
 });
-
+function setOptionRef(index) {
+  return (el) => {
+    optionRefs.value[index] = el;
+  };
+}
 function addEventListener() {
   window.addEventListener('click', removeSelection);
   if (props.scrollWrapperClassName) {
@@ -146,8 +151,86 @@ function initDisplay() {
   }
   formulaRef.value.innerHTML = result;
 }
+const selectedOptionIndex = ref(0);  // 记录高亮选项的索引
+function confirmSelectedOption() {
+  if (displayOptions.value.length > 0) {
+    optionClick(displayOptions.value[selectedOptionIndex.value]);
+  }
+}
 function escKeyup(e) {
-  e.key === 'Escape'&&removeSelection(e);
+  switch (e.key) {
+    case 'ArrowDown':
+      getClosestOption('down');
+      break;
+    case 'ArrowUp':
+      getClosestOption('up');
+      break;
+    case 'ArrowRight':
+      selectedOptionIndex.value<displayOptions.value.length-1?selectedOptionIndex.value++:selectedOptionIndex.value=0;
+      break;
+    case 'ArrowLeft':
+      selectedOptionIndex.value?selectedOptionIndex.value--:selectedOptionIndex.value=displayOptions.value.length-1;
+      break;
+    case 'Enter':
+      confirmSelectedOption();
+      break;
+    case 'Escape':
+      removeSelection(e);
+      selectedOptionIndex.value = 0;
+      break;
+    default:
+      filter.value = e.target.value;
+      break;
+  }
+}
+
+function getClosestOption(direction = 'down') {
+  const currentIndex = selectedOptionIndex.value;
+  const options = optionRefs.value;
+
+  // 确保存在当前选项
+  const currentElement = options[currentIndex];
+  if (!currentElement) {
+    return null;
+  }
+
+  const currentRect = currentElement.getBoundingClientRect();
+  const currentCenterX = currentRect.left + (currentRect.width / 2);
+  const currentCenterY = currentRect.top + (currentRect.height / 2);
+
+  let closestIndex = null;
+  let closestDistance = Infinity;
+
+  options.forEach((element, index) => {
+    if (index === currentIndex) return; // 跳过当前选项
+
+    const elementRect = element.getBoundingClientRect();
+    const elementCenterX = elementRect.left + (elementRect.width / 2);
+    const elementCenterY = elementRect.top + (elementRect.height / 2);
+
+    // 计算 X 和 Y 轴的距离
+    const xDistance = Math.abs(elementCenterX - currentCenterX);
+    const yDistance = Math.abs(elementCenterY - currentCenterY);
+
+    // 优先考虑 X 轴距离，可以设置一个权重
+    const distance = xDistance * 2 + yDistance;
+
+    // 根据方向判断最近的选项
+    if (direction === 'down' && elementCenterY > currentCenterY) {
+      if (distance < closestDistance) {
+        closestDistance = distance;
+        closestIndex = index;
+      }
+    } else if (direction === 'up' && elementCenterY < currentCenterY) {
+      if (distance < closestDistance) {
+        closestDistance = distance;
+        closestIndex = index;
+      }
+    }
+  });
+
+  closestIndex!=null&& (selectedOptionIndex.value = closestIndex);
+  return closestIndex;
 }
 function removeSelection(e) {
   showSelection.value = false;
@@ -191,6 +274,7 @@ function optionClick(item) {
   showSelection.value = false;
   const res = `<div contenteditable="false">${name}<span>${field}</span></div>`;
   resetDisplay('@', res);
+  selectedOptionIndex.value = 0; // 选择后重置高亮索引
 }
 
 function resetDisplay(from, to = '') {
