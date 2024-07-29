@@ -5,7 +5,7 @@
       @keydown.stop="onKeydown" @keyup="onKeyup" @blur="setValue"></div>
     <div class="hint" v-if="errorMsg">{{ errorMsg }}</div>
     <div class="formula-input-selection" v-if="showSelection" ref="selectionRef" @click.stop>
-      <el-input v-model="filter" ref="inputRef" placeholder="输入关键字筛选"></el-input>
+      <el-input v-model="filter" ref="inputRef" placeholder="输入关键字筛选" @keyup="escKeyup"></el-input>
       <div class="options" v-if="displayOptions.length">
         <span class="option" v-for="(item, i) in displayOptions" :key="i" @click="optionClick(item)">
           {{ item.name }}
@@ -146,7 +146,9 @@ function initDisplay() {
   }
   formulaRef.value.innerHTML = result;
 }
-
+function escKeyup(e) {
+  e.key === 'Escape'&&removeSelection(e);
+}
 function removeSelection(e) {
   showSelection.value = false;
   e && resetDisplay('@');
@@ -195,21 +197,16 @@ function resetDisplay(from, to = '') {
   let text = formulaRef.value.innerHTML;
 
   if (text.includes(from)) {
-    // 替换 `from` 为 `to`
+    let fromIndex = text.indexOf(from);
     const newText = text.replace(new RegExp(from, 'g'), to);
     formulaRef.value.innerHTML = newText;
-
-    // 使用 nextTick 确保 DOM 更新后再设置光标
     nextTick(() => {
       const target = formulaRef.value;
       let cursorIndex = 0;
-      let originalCount=0;
       if (to === '') {
-        cursorIndex = text.indexOf(from);
+        cursorIndex = fromIndex;
       } else {
-        const before = text.substring(0, text.indexOf(from) + from.length);
-        originalCount = (before.match(new RegExp(to, 'g')) || []).length;
-        cursorIndex = newText.indexOf(to, originalCount * to.length) + to.length;
+        cursorIndex = fromIndex + to.length;
       }
       setFocus(target, cursorIndex);
     });

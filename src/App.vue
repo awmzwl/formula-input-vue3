@@ -7,46 +7,42 @@ import FormulaInput from './views/FormulaInput/index.vue'
 import { ref, watch } from 'vue'
 const validKeys='0123456789+-*/%!@.()'
 const model = ref({
-  formula: '1+superman+2-batman+3',
+  formula: 'salary+bonus+performance+300',
   vars: {
-    superman: 'ClarkKent',
-    batman: 'BruceWayne',
+    salary: '基本工资',
+    bonus: '奖金',
+    performance: '绩效'
   }
 })
 const options = ref([
   {
-    field: 'superman',
-    name: 'ClarkKent'
+    field: 'Br',
+    name: 'Br'
   },
   {
-    field: 'batman',
-    name: 'BruceWayne'
+    field: 'salary',
+    name: '基本工资'
   },
   {
-    field: 'theflash',
-    name: 'BarryAllen'
+    field: 'workHour',
+    name: '每日工作时长'
   },
   {
-    field: 'wonderwoman',
-    name: 'DianaPrince'
+    field: 'bonus',
+    name: '奖金'
   },
   {
-    field: 'aquaman',
-    name: 'ArthurCurry'
+    field: 'fullAttendance',
+    name: '满勤'
   },
   {
-    field: 'cyborg',
-    name: 'VictorStone'
-  },
-  {
-    field: 'greenlantern',
-    name: 'HalJordan'
+    field: 'performance',
+    name: '绩效'
   }
 ])
-const cs=() => {
-  console.log(model.value)
-}
+
 function afterChange(v) {
+  // console.log(model.value)
 }
 </script>
 <style>

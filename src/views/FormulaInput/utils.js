@@ -44,14 +44,12 @@ export const setFocus = (el, index) => {
   const sel = window.getSelection()
   let nodeIndex = 0
   let offsetIndex = 0
+
   const list = str2dom(el.innerHTML)
-  console.log(list);
-  for (let i = 0; i < list.length&&index; i++) {
+  for (let i = 0; i < list.length; i++) {
     const v = list[i]
     if (isHTML(v)) {
       index -= dom2str(v).length
-      console.log(dom2str(v));
-      console.log(index);
     } else {
       if (index > v.length) {
         index -= v.length
@@ -65,15 +63,21 @@ export const setFocus = (el, index) => {
   }
   range.selectNodeContents(el)
   range.collapse(false)
-  if(el.childNodes[nodeIndex]){
-    console.log(el.childNodes[nodeIndex].nodeType)
-    const targetNode = el.childNodes[nodeIndex];
-    const previousNode = el.childNodes[nodeIndex - 1];
-    if(targetNode&&previousNode){
-      range.setStartAfter(previousNode);
-      range.setEndBefore(targetNode);
+  // console.log(index,nodeIndex,offsetIndex);
+    if(index<=0){
+      while(index<0){
+        index+=dom2str(list[nodeIndex-1]).length
+        nodeIndex--
+      }
+      const targetNode = el.childNodes[nodeIndex];
+      const previousNode = el.childNodes[nodeIndex - 1];
+      targetNode&&range.setEndBefore(targetNode);
+      previousNode&&range.setStartAfter(previousNode);
+      console.log('光标处于前后');
+    }else{
+      range.setStart(el.childNodes[nodeIndex], offsetIndex)
+      console.log('光标处于文字中间');
     }
-  }
   range.collapse(true)
   sel.removeAllRanges()
   sel.addRange(range)
