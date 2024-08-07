@@ -5,12 +5,13 @@
 ![加载失败](./src/assets/xg.gif)
 ### vue3版本说明
 2024年7月25日基于原作者[Leon](https://github.com/leonzhang1108)的[vue2版本](https://github.com/leonzhang1108/formula-input)</a>升级到vue3版本:
-<br>1.添加组件validKeys属性自定义可输入字符，默认‘0123456789+-*/%!@.()’
+<br>1.添加组件validKeys属性自定义可输入字符，默认‘0123456789+-*/%@()’
 <br>2.修复光标定位
 <br>3.添加方向键选择预选值，回车选中
+<br>4.重新定义options.field值均用{自定义名}包裹
 
 ### 使用方法
-输入框内默认只能输入数字及```+-*/%.@!()```，其中键入```@```可触发弹窗选择变量。
+输入框内默认只能输入数字及```+-*/%@()```，其中键入```@```可触发弹窗选择变量。
 想要输入其他字符，需要设置```validKeys```
 ```typescript
 // main.js
@@ -34,7 +35,7 @@ Vue.use(FormulaInput)
 | 参数     | 说明             | 类型                   | 默认值 |
 | -------- | ---------------- | ------------------------ | ------ |
 | v-model  | 值 | [model](#model) | { formula: "", vars: {} } |
-| validKeys  | 可输入的键 | String | "0123456789+-*/%!@.()" |
+| validKeys  | 可输入的键 | String | "0123456789+-*/%@()" |
 | options  | 选项 | [options](#options) | [] |
 | disabled | 能否修改 | Boolean | false |
 | placeholder | input说明 | String | "" |
@@ -45,10 +46,10 @@ Vue.use(FormulaInput)
 {
   "formula": "1+superman+2-batman+3*aquaman+4/wonderwoman",
   "vars": {
-    "superman": "ClarkKent",
-    "batman": "BruceWayne",
-    "aquaman": "ArthurCurry",
-    "wonderwoman": "DianaPrince"
+    "{superman}": "ClarkKent",
+    "{batman}": "BruceWayne",
+    "{aquaman}": "ArthurCurry",
+    "{wonderwoman}": "DianaPrince"
   }
 }
 ```
@@ -59,31 +60,31 @@ Vue.use(FormulaInput)
 ```json
 [
   {
-    "field": "superman",
+    "field": "{superman}",
     "name": "ClarkKent"
   },
   {
-    "field": "batman",
+    "field": "{batman}",
     "name": "BruceWayne"
   },
   {
-    "field": "theflash",
+    "field": "{theflash}",
     "name": "BarryAllen"
   },
   {
-    "field": "wonderwoman",
+    "field": "{wonderwoman}",
     "name": "DianaPrince"
   },
   {
-    "field": "aquaman",
+    "field": "{aquaman}",
     "name": "ArthurCurry"
   },
   {
-    "field": "cyborg",
+    "field": "{cyborg}",
     "name": "VictorStone"
   },
   {
-    "field": "greenlantern",
+    "field": "{greenlantern}",
     "name": "HalJordan"
   }
 ]

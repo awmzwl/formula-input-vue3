@@ -22,7 +22,7 @@ export const dom2str = node => {
 export const isHTML = v =>
   Object.prototype.toString.call(v) === '[object HTMLDivElement]'
 
-export const defaultKeys = '0123456789+-*/%!@.()'
+export const defaultKeys = '0123456789+-*/%@()'
 
 export const getDiffIndex = (s1, s2) => {
   const l1 = s1.split('')
