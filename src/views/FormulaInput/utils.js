@@ -1,92 +1,74 @@
 export const getHTMLList = ({ text, prefix, suffix }) =>
   text
-    .replace(new RegExp(prefix, 'g'), ',')
-    .replace(new RegExp(suffix, 'g'), ',')
+    .replaceAll(prefix, ',')
+    .replaceAll(suffix, ',')
     .split(',')
-    .filter(v => !!v)
+    .filter(Boolean)
 
-export const str2dom = v => {
-  const objE = document.createElement('div')
-  objE.innerHTML = v
-  return [...objE.childNodes]
+export const str2dom = (v) => {
+  const container = document.createElement('div')
+  container.innerHTML = v
+  return Array.from(container.childNodes)
 }
 
-export const dom2str = node => {
-  let tmpNode = document.createElement('div')
-  tmpNode.appendChild(node)
-  let str = tmpNode.innerHTML
-  tmpNode = node = null
-  return str
+export const dom2str = (node) => {
+  const container = document.createElement('div')
+  container.appendChild(node.cloneNode(true))
+  return container.innerHTML
 }
 
-export const isHTML = v =>
-  Object.prototype.toString.call(v) === '[object HTMLDivElement]'
+export const isHTML = (v) => v instanceof HTMLElement
 
 export const defaultKeys = '0123456789+-*/%@()'
 
 export const getDiffIndex = (s1, s2) => {
-  const l1 = s1.split('')
-  const l2 = s2.split('')
-  const max = Math.max(l1.length, l2.length)
-  let index = 0
-  for (let i = 0; i < max; i++) {
-    if (l1[i] == l2[i]) {
-      index++
-    } else {
-      break
-    }
+  const length = Math.max(s1.length, s2.length)
+  for (let i = 0; i < length; i++) {
+    if (s1[i] !== s2[i]) return i
   }
-  return index
+  return length
 }
 
 export const setFocus = (el, index) => {
   const range = document.createRange()
   const sel = window.getSelection()
+
+  const nodes = str2dom(el.innerHTML)
   let nodeIndex = 0
   let offsetIndex = 0
 
-  const list = str2dom(el.innerHTML)
-  for (let i = 0; i < list.length; i++) {
-    const v = list[i]
-    if (isHTML(v)) {
-      index -= dom2str(v).length
+  for (const node of nodes) {
+    if (isHTML(node)) {
+      index -= dom2str(node).length
+    } else if (index > node.textContent.length) {
+      index -= node.textContent.length
     } else {
-      if (index > v.length) {
-        index -= v.length
-      } 
-      else {
-        offsetIndex = index
-        break
-      }
+      offsetIndex = index
+      break
     }
     nodeIndex++
   }
-  range.selectNodeContents(el)
-  range.collapse(false)
-  // console.log(index,nodeIndex,offsetIndex);
-    if(index<=0){
-      while(index<0){
-        index+=dom2str(list[nodeIndex-1]).length
-        nodeIndex--
-      }
-      const targetNode = el.childNodes[nodeIndex];
-      const previousNode = el.childNodes[nodeIndex - 1];
-      targetNode&&range.setEndBefore(targetNode);
-      previousNode&&range.setStartAfter(previousNode);
-      console.log('光标处于前后');
-    }else{
-      range.setStart(el.childNodes[nodeIndex], offsetIndex)
-      console.log('光标处于文字中间');
+
+  if (index <= 0) {
+    while (index < 0) {
+      nodeIndex--
+      index += dom2str(nodes[nodeIndex]).length
     }
+    el.childNodes[nodeIndex]&&range.setEndBefore(el.childNodes[nodeIndex])
+    el.childNodes[nodeIndex - 1]&&range.setStartAfter(el.childNodes[nodeIndex - 1])
+  } else {
+    range.setStart(el.childNodes[nodeIndex], offsetIndex)
+  }
+
   range.collapse(true)
   sel.removeAllRanges()
   sel.addRange(range)
 }
 
 export const getParentNode = (el, className) => {
-  if (!el) return null
-  do {
+  while (el && el !== document) {
     el = el.parentNode
-  } while (el && !el.className.includes(className))
-  return el
+    if (el && el.classList.contains(className)) return el
+  }
+  return null
 }
