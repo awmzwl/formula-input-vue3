@@ -9,10 +9,13 @@
 <br>2.修复光标定位
 <br>3.添加方向键选择预选值，回车选中
 <br>4.重新定义options.field值均用{自定义名}包裹
+<br>5.添加isCheck属性，当isCheck为true时，返回的check有效
 
 ### 使用方法
 输入框内默认只能输入数字及```+-*/%@()```，其中键入```@```可触发弹窗选择变量。
 想要输入其他字符，需要设置```validKeys```
+默认选项为空，需要设置options
+默认不做校验，需要设置isCheck为true
 ```typescript
 // main.js
 import FormulaInput from "@ali/formula-input"
@@ -38,7 +41,9 @@ Vue.use(FormulaInput)
 | validKeys  | 可输入的键 | String | "0123456789+-*/%@()" |
 | options  | 选项 | [options](#options) | [] |
 | disabled | 能否修改 | Boolean | false |
-| placeholder | input说明 | String | "" |
+| placeholder | input说明 | String | "输入「@」后选择" |
+| isCheck | 是否检验 | Boolean | false |
+| check |  检验返回值 | Boolean | false |
 | scrollWrapperClassName | 外层滚动的className,定位用 | String   | ""  |
 
 ### model

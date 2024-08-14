@@ -3,9 +3,9 @@
     <div ref="formulaRef" class="input" :class="{ error: errorMsg }"
       :contenteditable="disabled ? 'false' : 'plaintext-only'" :placeholder="placeholder" style="ime-mode: disabled;"
       @keydown.stop="onKeydown" @keyup="onKeyup" @blur="setValue"></div>
-    <div class="hint" v-if="errorMsg">{{ errorMsg }}</div>
-    <div class="formula-input-selection" v-if="showSelection" ref="selectionRef" @click.stop>
-      <el-input v-model="filter" ref="inputRef" placeholder="输入关键字筛选" @keyup="escKeyup"></el-input>
+    <div class="hint" v-if="errorMsg">&nbsp;{{ errorMsg }}</div>
+    <div class="formula-input-selection" v-if="showSelection&&!disabled" ref="selectionRef" @click.stop>
+      <el-input v-model="filter" ref="inputRef" placeholder="输入关键字筛选" @keydown="escKeyDown" @keyup="escKeyup"></el-input>
       <div class="options" v-if="displayOptions.length">
         <span class="option"  :class="{ 'selected': i === selectedOptionIndex }"  v-for="(item, i) in displayOptions" :key="i" :ref="setOptionRef(i)" @click="optionClick(item)">
           {{ item.name }}
@@ -41,7 +41,10 @@ const props = defineProps({
       vars: {}
     })
   },
-  placeholder: String,
+  placeholder: {
+    type: String,
+    default: '输入「@」后选择'
+  },
   disabled: {
     type: Boolean,
     default: false
@@ -54,10 +57,18 @@ const props = defineProps({
   validKeys: {
     type: String,
     default: defaultKeys
+  },
+  isCheck:{
+    type:Boolean,
+    default:false
+  },
+  check:{
+    type:Boolean,
+    default:false
   }
 });
 
-const emit = defineEmits(['update:value', 'change']);
+const emit = defineEmits(['update:value', 'change', 'update:check']);
 
 const formulaRef = ref(null);
 const selectionRef = ref(null);
@@ -75,6 +86,7 @@ const throttleSetSelectionStyle = throttle(setSelectionStyle, 100);
 watch(() => props.modelValue, (newVal) => {
   Object.assign(innerModel, newVal || { formula: '', vars: {} });
   initDisplay();
+  errorMsg.value = '';
 });
 
 watch(() => showSelection.value, (newVal) => {
@@ -174,13 +186,16 @@ function escKeyup(e) {
     case 'Enter':
       confirmSelectedOption();
       break;
-    case 'Escape':
-      removeSelection(e);
-      selectedOptionIndex.value = 0;
-      break;
     default:
       filter.value = e.target.value;
       break;
+  }
+}
+function escKeyDown(e) {
+  if(e.key=='Escape'){
+    removeSelection(e);
+    selectedOptionIndex.value = 0;
+    e.stopPropagation();
   }
 }
 
@@ -247,6 +262,7 @@ function onKeydown(e) {
       openSelection();
       break;
     default:
+      break;
   }
 }
 
@@ -330,8 +346,41 @@ function setValue() {
   };
   emit('update:modelValue', res);
   emit('change', res);
+  nextTick(() => {
+    props.isCheck&&(emit('update:check', checkFormula()));
+  });
 }
 
+/** 检查公式格式 */
+const checkFormula = () => {
+  let formula=props.modelValue.formula;
+  let reg = /}{|^[+\-*/%]|[+\-*/%]$|\d{|}\d|}\(|\(}|\(\)|\d\(|\)\d|\)\(|\([+\-*/%]|[+\-*/%]\)|[+\-*/%]{2,}/;
+  let arr=formula.match(reg)||!is_leagl_brackets(formula)||!formula;
+  if(arr){
+    errorMsg.value=("公式格式错误或为空");
+    return false;
+  }
+  return true;
+}
+/** 检查括号是否成对匹配 */
+const is_leagl_brackets=(str)=> {
+  var array = [];
+  for (var i = 0; i < str.length; i++) {
+    var item = str[i];
+    if (item === "(") {
+      array.push("(");
+    } else if (item === ")") {
+      if (array.length === 0) {
+        return false;
+      } else {
+        array.pop();
+      }
+    } else {
+      continue;
+    }
+  };
+  return array.length === 0;
+}
 function validate() {
   errorMsg.value = '';
   const { formula: formulaValue } = props.modelValue || {};
